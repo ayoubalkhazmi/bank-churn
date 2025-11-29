@@ -39,10 +39,7 @@ def home():
                 <label>Age:</label><input type="number" name="Age" value="40" required>
                 <label>Tenure (Years):</label><input type="number" name="Tenure" value="3" required>
                 <label>Balance:</label><input type="number" step="0.01" name="Balance" value="60000" required>
-                
-                <!-- NOTE: The model expects 'Points Earned' instead of NumOfProducts based on your error -->
-                <label>Points Earned / Num Products:</label><input type="number" name="NumOfProducts" value="1" required>
-                
+                <label>Number of Products:</label><input type="number" name="NumOfProducts" value="1" required>
                 <label>Has CrCard (1=Yes, 0=No):</label><input type="number" name="HasCrCard" value="1" required>
                 <label>Is Active Member (1=Yes, 0=No):</label><input type="number" name="IsActiveMember" value="1" required>
                 <label>Estimated Salary:</label><input type="number" step="0.01" name="EstimatedSalary" value="50000" required>
@@ -60,32 +57,17 @@ def predict(
     IsActiveMember: int = Form(...), EstimatedSalary: float = Form(...)
 ):
     try:
-        # HERE IS THE FIX: 
-        # We map the Input Variables (right) to the Model's Expected Names (left)
-        input_dict = {
-            'Credit Score': [CreditScore],    # Model wanted space
-            'Geography': [Geography],
-            'Gender': [Gender],
-            'Age': [Age],
-            'Tenure': [Tenure],
-            'Balance': [Balance],
-            'Points Earned': [NumOfProducts], # Model called this 'Points Earned'
-            'Credit Card': [HasCrCard],       # Model called this 'Credit Card'
-            'Active': [IsActiveMember],       # Model called this 'Active'
-            'Salary': [EstimatedSalary]       # Model called this 'Salary'
-        }
-        df = pd.DataFrame(input_dict)
-        
-        # Apply Encoders
-        for col, le in encoders.items():
-            if col in df.columns: df[col] = le.transform(df[col])
-            
-        # Scale and Predict
-        X_final = scaler.transform(df)
-        pred = model.predict(X_final)[0]
-        
-        msg = "⚠️ CUSTOMER WILL LEAVE" if pred == 1 else "✅ CUSTOMER WILL STAY"
-        color = "red" if pred == 1 else "green"
-        
-        return f"<html><body style='text-align:center;font-family:sans-serif;'><h1 style='color:{color}'>{msg}</h1><a href='/'>Back</a></body></html>"
-    except Exception as e: return f"Error: {e}"
+        # 1. Create a "Clean" dictionary of your inputs (No spaces, lowercase)
+        # This acts as a lookup table.
+        form_inputs = {
+            'creditscore': CreditScore,
+            'geography': Geography,
+            'gender': Gender,
+            'age': Age,
+            'tenure': Tenure,
+            'balance': Balance,
+            'numofproducts': NumOfProducts,
+            'pointsearned': NumOfProducts, # Handle alias
+            'hascrcard': HasCrCard,
+            'creditcard': HasCrCard,       # Handle alias
+            'isactivemember': IsA

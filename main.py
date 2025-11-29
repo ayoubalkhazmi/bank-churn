@@ -66,8 +66,4 @@ def predict(
             'age': Age,
             'tenure': Tenure,
             'balance': Balance,
-            'numofproducts': NumOfProducts,
-            'pointsearned': NumOfProducts, # Handle alias
-            'hascrcard': HasCrCard,
-            'creditcard': HasCrCard,       # Handle alias
-            'isactivemember': IsA
+            'numofproduct

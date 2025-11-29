@@ -39,7 +39,10 @@ def home():
                 <label>Age:</label><input type="number" name="Age" value="40" required>
                 <label>Tenure (Years):</label><input type="number" name="Tenure" value="3" required>
                 <label>Balance:</label><input type="number" step="0.01" name="Balance" value="60000" required>
-                <label>NumOfProducts:</label><input type="number" name="NumOfProducts" value="1" required>
+                
+                <!-- NOTE: The model expects 'Points Earned' instead of NumOfProducts based on your error -->
+                <label>Points Earned / Num Products:</label><input type="number" name="NumOfProducts" value="1" required>
+                
                 <label>Has CrCard (1=Yes, 0=No):</label><input type="number" name="HasCrCard" value="1" required>
                 <label>Is Active Member (1=Yes, 0=No):</label><input type="number" name="IsActiveMember" value="1" required>
                 <label>Estimated Salary:</label><input type="number" step="0.01" name="EstimatedSalary" value="50000" required>
@@ -57,12 +60,19 @@ def predict(
     IsActiveMember: int = Form(...), EstimatedSalary: float = Form(...)
 ):
     try:
-        # Arrange input exactly as training data expected
+        # HERE IS THE FIX: 
+        # We map the Input Variables (right) to the Model's Expected Names (left)
         input_dict = {
-            'CreditScore': [CreditScore], 'Geography': [Geography], 'Gender': [Gender],
-            'Age': [Age], 'Tenure': [Tenure], 'Balance': [Balance],
-            'NumOfProducts': [NumOfProducts], 'HasCrCard': [HasCrCard],
-            'IsActiveMember': [IsActiveMember], 'EstimatedSalary': [EstimatedSalary]
+            'Credit Score': [CreditScore],    # Model wanted space
+            'Geography': [Geography],
+            'Gender': [Gender],
+            'Age': [Age],
+            'Tenure': [Tenure],
+            'Balance': [Balance],
+            'Points Earned': [NumOfProducts], # Model called this 'Points Earned'
+            'Credit Card': [HasCrCard],       # Model called this 'Credit Card'
+            'Active': [IsActiveMember],       # Model called this 'Active'
+            'Salary': [EstimatedSalary]       # Model called this 'Salary'
         }
         df = pd.DataFrame(input_dict)
         
